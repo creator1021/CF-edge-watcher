@@ -1,6 +1,6 @@
-# Cloudflare Edge Watcher
+# CF Edge Watcher
 
-Cloudflare Edge Watcher is a lightweight power/server monitoring tool for homelab users.
+CF Edge Watcher is a lightweight power/server monitoring tool for homelab users.
 
 It sends heartbeat pings from your local server to a Cloudflare Worker. If the local server loses power, internet, or becomes unreachable, Cloudflare detects the missing heartbeat and sends a Telegram alert. When the server comes back online, it sends a message as server is available.
 
@@ -39,13 +39,7 @@ Cloudflare KV stores latest server status
 Telegram alert```
 
 
-# Quick Start
 
-## 1. Clone the repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/cloudflare-edge-watcher.git
-cd cloudflare-edge-watcher
 ```
 
 ---
@@ -63,8 +57,8 @@ cd cloudflare-edge-watcher
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/cloudflare-edge-watcher.git
-cd cloudflare-edge-watcher
+git clone https://github.com/creator1021/CF-edge-watcher.git
+cd CF-edge-watcher
 ```
 
 ---
@@ -79,8 +73,8 @@ nano .env
 Example:
 
 ```env
-CLOUDFLARE_ACCOUNT_ID="clouflare account ID" // change me
-CLOUDFLARE_API_TOKEN="cloudflare API Token" // change me
+CLOUDFLARE_ACCOUNT_ID="clouflare account ID" # change me
+CLOUDFLARE_API_TOKEN="cloudflare API Token" # change me
 
 WORKER_NAME="cloudflare-edge-watcher"
 KV_BINDING="POWER_KV"
@@ -88,14 +82,14 @@ KV_NAMESPACE_TITLE="cloudflare-worker"
 
 SERVER_ID="home-server"
 SERVER_NAME="Home-server"
-THRESHOLD_SECONDS="180" // If It didn't get the heartbeat (Ping) after 3 min (180 sec) it will send the message to telegram // If you want change me
-CRON_EXPRESSION="*/1 * * * *" // cloudflare will every min for the status //If you want change me
+THRESHOLD_SECONDS="180" # If It didn't get the heartbeat (Ping) after 3 min (180 sec) it will send the message to telegram # If you want change me
+CRON_EXPRESSION="*/1 * * * *" # cloudflare will every min for the status #If you want change me
 
-TELEGRAM_BOT_TOKEN="Telegram bot token" //change me
-TELEGRAM_CHAT_ID=" Telegram chat ID it will start with "-" " //change me
-HEARTBEAT_SECRET="(Run this command in the linux terminal "openssl rand -hex 32" and paste the output here)" //change me
+TELEGRAM_BOT_TOKEN="Telegram bot token" #change me
+TELEGRAM_CHAT_ID=" Telegram chat ID it will start with "-" " #change me
+HEARTBEAT_SECRET="(Run this command in the linux terminal "openssl rand -hex 32" and paste the output here)" #change me
 
-INTERVAL_SECONDS="60" // In your local server it will do curl in every 60 sec //If you want change me
+INTERVAL_SECONDS="60" # In your local server it will do curl in every 60 sec # If you want change me
 ```
 
 ---
