@@ -219,8 +219,8 @@ Meaning:
 ## 3. Run Cloudflare worker setup script
 
 ```bash
-chmod +x scripts/cloudflare-setup.sh
-./scripts/cloudflare-setup.sh
+chmod +x scripts/cf-edge-watcher-setup.sh
+./scripts/cf-edge-watcher-setup.sh
 ```
 
 This will:
@@ -236,13 +236,13 @@ This will:
 ## 4. Start the local Docker agent
 
 ```bash
-docker compose up -d --build
+docker compose up -d 
 ```
 
 Check logs:
 
 ```bash
-docker logs -f cloudflare-edge-watcher-agent
+docker logs -f cf-edge-watcher
 ```
 
 Expected output:
