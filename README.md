@@ -36,9 +36,7 @@ Cloudflare KV stores latest server status
         |
         | Cron trigger checks heartbeat age
         v
-Telegram alert```
-
-
+Telegram alert
 
 ```
 
