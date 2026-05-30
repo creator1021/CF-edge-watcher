@@ -1,7 +1,7 @@
 services:
-  cloudflare-edge-watcher:
-    build:  ./local
-    container_name: cloudflare-edge-worker-watcher
+  cf-edge-watcher:
+    image: creator1021/cf-edge-watcher:latest
+    container_name: cf-edge-watcher
     restart: unless-stopped
     env_file:
      - ./local/.env
