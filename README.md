@@ -93,7 +93,7 @@ CRON_EXPRESSION="*/1 * * * *" // cloudflare will every min for the status //If y
 
 TELEGRAM_BOT_TOKEN="Telegram bot token" //change me
 TELEGRAM_CHAT_ID=" Telegram chat ID it will start with "-" " //change me
-HEARTBEAT_SECRET="Same output you have used in the locaL/.env.example (Run this command in the linux terminal "openssl rand -hex 32" and paste the output here)" //change me
+HEARTBEAT_SECRET="(Run this command in the linux terminal "openssl rand -hex 32" and paste the output here)" //change me
 
 INTERVAL_SECONDS="60" // In your local server it will do curl in every 60 sec //If you want change me
 ```
@@ -201,18 +201,18 @@ CLOUDFLARE_API_TOKEN="your_cloudflare_api_token"
 ## Recommended Values
 
 ```env
-INTERVAL_SECONDS="300"
-CRON_EXPRESSION="*/5 * * * *"
-THRESHOLD_SECONDS="900"
+INTERVAL_SECONDS="60"
+CRON_EXPRESSION="*/1 * * * *"
+THRESHOLD_SECONDS="180"
 ```
 
 Meaning:
 
 | Setting | Meaning |
 |---|---|
-| `INTERVAL_SECONDS=300` | Local Docker agent sends heartbeat every 5 minutes |
-| `CRON_EXPRESSION="*/5 * * * *"` | Cloudflare Worker checks every 5 minutes |
-| `THRESHOLD_SECONDS=900` | Alert is sent after around 15 minutes without heartbeat |
+| `INTERVAL_SECONDS=60` | Local Docker agent sends heartbeat every 1 minutes |
+| `CRON_EXPRESSION="*/1 * * * *"` | Cloudflare Worker checks every 1 minutes |
+| `THRESHOLD_SECONDS=180` | Alert is sent after around 3 minutes without heartbeat |
 
 ---
 
@@ -251,5 +251,5 @@ Expected output:
 Heartbeat container started
 Worker URL: https://your-worker.your-subdomain.workers.dev
 Server name: Home-server
-Interval seconds: 300
+Interval seconds: 60
 ```
