@@ -6,7 +6,10 @@
 # Generated local files
 agent/.env
 worker/.env
+worker/package-lock.json
+worker/package.json
 worker/wrangler.toml
+logs/*
 
 # Node
 node_modules/

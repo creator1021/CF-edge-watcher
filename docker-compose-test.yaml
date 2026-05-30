@@ -1,12 +1,12 @@
 services:
   cf-edge-watcher:
-    image: creator1021/cf-edge-watcher:latest
-    container_name: cf-edge-watcher
+    image: creator1021/cf-edge-watcher:test
+    container_name: cf-edge-watcher-test
     restart: unless-stopped
     env_file:
      - ./local/.env
     volumes:
-      - ./logs:/app/logs  // if you want change me
+      - ./logs:/app/logs
     logging:
       driver: "json-file"
       options:
