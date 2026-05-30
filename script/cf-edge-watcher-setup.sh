@@ -47,6 +47,8 @@ LOCAL_DIR="$ROOT_DIR/local"
 mkdir -p "$WORKER_DIR"
 mkdir -p "$LOCAL_DIR"
 
+
+
 cd "$WORKER_DIR"
 
 if [ ! -f "package.json" ]; then
@@ -176,6 +178,10 @@ HEARTBEAT_SECRET="$HEARTBEAT_SECRET"
 SERVER_ID="$SERVER_ID"
 SERVER_NAME="$SERVER_NAME"
 INTERVAL_SECONDS="$INTERVAL_SECONDS"
+LOG_DIR="${LOG_DIR:-/app/logs}"
+LOG_FILE="${LOG_FILE:-/app/logs/cf-edge-watcher.log}"
+LOG_MAX_SIZE_MB="${LOG_MAX_SIZE_MB:-10}"
+LOG_MAX_FILES="${LOG_MAX_FILES:-2}"
 EOF
 
 echo ""

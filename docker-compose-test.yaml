@@ -1,0 +1,16 @@
+services:
+  cf-edge-watcher:
+    build:
+      context: ./local
+      dockerfile: Dockerfile
+    container_name: cf-edge-watcher
+    restart: unless-stopped
+    env_file:
+      - ./local/.env
+    volumes:
+      - ./logs:/app/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
