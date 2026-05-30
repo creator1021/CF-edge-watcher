@@ -1,0 +1,7 @@
+services:
+  cloudflare-edge-watcher:
+    build:  ./local
+    container_name: cloudflare-edge-worker-watcher
+    restart: unless-stopped
+    env_file:
+     - ./local/.env

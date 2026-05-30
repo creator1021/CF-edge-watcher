@@ -1,0 +1,23 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Generated local files
+agent/.env
+worker/.env
+worker/wrangler.toml
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Cloudflare/Wrangler
+.wrangler/
+.dev.vars
+.dev.vars.*
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
