@@ -6,7 +6,18 @@ on:
       - main
     tags:
       - "v*.*.*"
+    paths:
+      - "local/**"
+      - "worker/**"
+      - ".github/workflows/docker-publish.yml"
   workflow_dispatch:
+
+concurrency:
+  group: docker-publish-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   docker:
@@ -25,7 +36,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push latest image
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: ./local
