@@ -1,27 +1,20 @@
-name: Build and Push Docker Image
+name: Build, Push Docker Image, and Create Release
 
 on:
   push:
-    branches:
-      - main
-      - test
     tags:
       - "v*.*.*"
-    paths:
-      - "local/**"
-      - "worker/**"
-      - ".github/workflows/docker-publish.yml"
   workflow_dispatch:
 
 concurrency:
-  group: docker-publish-${{ github.ref }}
+  group: release-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  docker:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,16 +30,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set Docker image tag
-        id: vars
-        run: |
-          if [ "${GITHUB_REF_NAME}" = "main" ]; then
-            echo "IMAGE_TAG=latest" >> "$GITHUB_OUTPUT"
-          elif [ "${GITHUB_REF_NAME}" = "test" ]; then
-            echo "IMAGE_TAG=test" >> "$GITHUB_OUTPUT"
-          else
-            echo "IMAGE_TAG=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Generate Docker image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/cf-edge-watcher
+          tags: |
+            type=ref,event=tag
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -54,7 +44,34 @@ jobs:
           context: ./local
           file: ./local/Dockerfile
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/cf-edge-watcher:${{ steps.vars.outputs.IMAGE_TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMAGE_TAG: ${{ github.ref_name }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          gh release create "$IMAGE_TAG" \
+            --title "$IMAGE_TAG" \
+            --generate-notes \
+            --notes "## Docker Image
+
+          \`\`\`bash
+          docker pull ${DOCKERHUB_USERNAME}/cf-edge-watcher:${IMAGE_TAG}
+          \`\`\`
+
+          ## Docker Compose
+
+          \`\`\`yaml
+          services:
+            cf-edge-watcher:
+              image: ${DOCKERHUB_USERNAME}/cf-edge-watcher:${IMAGE_TAG}
+              container_name: cf-edge-watcher
+              restart: unless-stopped
+              env_file:
+                - ./local/.env
+              volumes:
+                - ./logs:/app/logs
+          \`\`\`"
