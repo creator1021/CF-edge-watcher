@@ -1,6 +1,8 @@
 services:
   cf-edge-watcher:
-    image: creator1021/cf-edge-watcher:test
+    build:
+      context: ./local
+      dockerfile: Dockerfile
     container_name: cf-edge-watcher-test
     restart: unless-stopped
     env_file:

@@ -85,7 +85,7 @@ async function handleHeartbeat(request, env) {
     serverName,
     status: "online",
     lastSeen: now,
-    lastSeenText: formatIST(now),
+    lastSeenText: formatTime(now, env),
     bootId: body.bootId || null,
     localServerName: body.server || null,
   };
@@ -99,7 +99,7 @@ async function handleHeartbeat(request, env) {
     await sendTelegram(
       env,
       `✅ ${serverName} is back online\n\n` +
-        `Time: ${formatIST(now)}\n` +
+        `Time: ${formatTime(now)}\n` +
         `Approx downtime: ${downtime}`
     );
   }
@@ -108,7 +108,7 @@ async function handleHeartbeat(request, env) {
     ok: true,
     status: "online",
     serverName,
-    time: formatIST(now),
+    time: formatTime(now, env),
   });
 }
 
@@ -131,7 +131,7 @@ async function handleStatus(request, env) {
   return jsonResponse({
     ...state,
     heartbeatAgeSeconds: ageSeconds,
-    checkedAt: formatIST(now),
+    checkedAt: formatTime(now, env),
   });
 }
 
@@ -156,9 +156,9 @@ async function checkServer(env) {
       ...state,
       status: "offline",
       downSince: state.lastSeen,
-      downSinceText: formatIST(state.lastSeen),
+      downSinceText: formatTime(state.lastSeen, env),
       detectedAt: now,
-      detectedAtText: formatIST(now),
+      detectedAtText: formatTime(now, env),
     };
 
     await putState(env, serverId, offlineState);
@@ -166,8 +166,8 @@ async function checkServer(env) {
     await sendTelegram(
       env,
       `⚠️ ${serverName} may be DOWN / power may be cut\n\n` +
-        `Last heartbeat: ${formatIST(state.lastSeen)}\n` +
-        `Detected at: ${formatIST(now)}\n` +
+        `Last heartbeat: ${formatTime(state.lastSeen, env)}\n` +
+        `Detected at: ${formatTime(now, env)}\n` +
         `No heartbeat for: ${ageSeconds} seconds`
     );
   }
@@ -218,17 +218,23 @@ async function sendTelegram(env, text) {
   }
 }
 
-function formatIST(ms) {
-  return new Date(ms).toLocaleString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    hour12: true,
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+function formatTime(ms, env) {
+  const timeZone = env.TIME_ZONE || "UTC";
+
+  try {
+    return new Date(ms).toLocaleString("en-US", {
+      timeZone,
+      hour12: true,
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  } catch (_) {
+    return new Date(ms).toISOString();
+  }
 }
 
 function formatDuration(ms) {

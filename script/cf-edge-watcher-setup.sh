@@ -78,6 +78,7 @@ compatibility_date = "2026-05-28"
 SERVER_ID = "$SERVER_ID"
 SERVER_NAME = "$SERVER_NAME"
 THRESHOLD_SECONDS = "$THRESHOLD_SECONDS"
+TIME_ZONE = "${TIME_ZONE:-Asia/Kolkata}"
 
 [triggers]
 crons = ["$CRON_EXPRESSION"]
