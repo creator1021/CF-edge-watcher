@@ -13,9 +13,13 @@ export default {
         return handleStatus(request, env);
       }
 
-    //   if (url.pathname === "/debug" && request.method === "GET") {
-    //     return handleDebug(env);
-    //   }
+      //   if (url.pathname === "/debug" && request.method === "GET") {
+      //     return handleDebug(env);
+      //   }
+
+      if (url.pathname === "/event" && request.method === "POST") {
+        return handleEvent(request, env);
+      }
 
       return new Response("Power monitor worker is running", {
         status: 200,
@@ -29,7 +33,7 @@ export default {
           message: error.message,
           stack: error.stack,
         },
-        500
+        500,
       );
     }
   },
@@ -38,7 +42,7 @@ export default {
     ctx.waitUntil(
       checkServer(env).catch((error) => {
         console.error("Scheduled check failed:", error);
-      })
+      }),
     );
   },
 };
@@ -100,13 +104,63 @@ async function handleHeartbeat(request, env) {
       env,
       `✅ ${serverName} is back online\n\n` +
         `Time: ${formatTime(now)}\n` +
-        `Approx downtime: ${downtime}`
+        `Approx downtime: ${downtime}`,
     );
   }
 
   return jsonResponse({
     ok: true,
     status: "online",
+    serverName,
+    time: formatTime(now, env),
+  });
+}
+
+async function handleEvent(request, env) {
+  validateEnv(env);
+
+  const secret = request.headers.get("x-heartbeat-secret");
+
+  if (!secret || secret !== env.HEARTBEAT_SECRET) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  let body = {};
+  try {
+    body = await request.json();
+  } catch (_) {
+    body = {};
+  }
+
+  const serverId = body.serverId || env.SERVER_ID || "home-server";
+  const serverName = body.serverName || env.SERVER_NAME || serverId;
+  const eventType = body.eventType || "unknown";
+  const now = Date.now();
+
+  if (eventType === "container_started") {
+    await sendTelegram(
+      env,
+      `🚀 CF Edge Watcher Started\n\n` +
+        `Server: ${serverName}\n` +
+        `Server ID: ${serverId}\n` +
+        `Time: ${formatTime(now, env)}`
+    );
+  }
+
+  if (eventType === "container_stopped") {
+    await sendTelegram(
+      env,
+      `🛑 CF Edge Watcher Stopped\n\n` +
+        `Server: ${serverName}\n` +
+        `Server ID: ${serverId}\n` +
+        `Time: ${formatTime(now, env)}`
+    );
+  }
+
+  return jsonResponse({
+    ok: true,
+    eventType,
+    serverId,
     serverName,
     time: formatTime(now, env),
   });
@@ -168,7 +222,7 @@ async function checkServer(env) {
       `⚠️ ${serverName} may be DOWN / power may be cut\n\n` +
         `Last heartbeat: ${formatTime(state.lastSeen, env)}\n` +
         `Detected at: ${formatTime(now, env)}\n` +
-        `No heartbeat for: ${ageSeconds} seconds`
+        `No heartbeat for: ${ageSeconds} seconds`,
     );
   }
 }
@@ -192,10 +246,7 @@ async function getState(env, serverId) {
 }
 
 async function putState(env, serverId, state) {
-  await env.POWER_KV.put(
-    STATE_KEY_PREFIX + serverId,
-    JSON.stringify(state)
-  );
+  await env.POWER_KV.put(STATE_KEY_PREFIX + serverId, JSON.stringify(state));
 }
 
 async function sendTelegram(env, text) {
@@ -219,7 +270,7 @@ async function sendTelegram(env, text) {
 }
 
 function formatTime(ms, env) {
-  const timeZone = env.TIME_ZONE || "UTC";
+  const timeZone = env.TIME_ZONE || "Asia/Kolkata";
 
   try {
     return new Date(ms).toLocaleString("en-US", {
